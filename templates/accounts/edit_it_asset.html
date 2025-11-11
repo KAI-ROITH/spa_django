@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit IT Asset - {{ asset.item }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <a href="{% url 'it_asset_detail' asset.pk %}" class="inline-flex items-center text-white text-sm mb-4 hover:text-blue-100 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Asset Detail
+                </a>
+                <h2 class="text-4xl font-bold text-white">Edit IT Asset</h2>
+                <p class="text-blue-100 text-sm mt-2">Update asset information</p>
+            </div>
+            <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="post" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-8">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-blue-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Basic Information
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Asset ID -->
+                <div>
+                    <label for="asset_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Asset ID
+                    </label>
+                    <input type="text" 
+                           name="asset_id" 
+                           id="asset_id"
+                           value="{{ asset.asset_id|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Enter asset ID">
+                    <p class="text-xs text-gray-500 mt-1">Unique identifier for this asset</p>
+                </div>
+                
+                <!-- Item Name -->
+                <div>
+                    <label for="item" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Item Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="item" 
+                           id="item"
+                           value="{{ asset.item }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Enter item name">
+                </div>
+                
+                <!-- Asset Type -->
+                <div>
+                    <label for="asset_type" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Asset Type <span class="text-red-500">*</span>
+                    </label>
+                    <select name="asset_type" 
+                            id="asset_type"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        <option value="">Select Asset Type</option>
+                        <option value="cpu" {% if asset.asset_type == 'cpu' %}selected{% endif %}>Computer/CPU</option>
+                        <option value="printer" {% if asset.asset_type == 'printer' %}selected{% endif %}>Printer</option>
+                        <option value="scanner" {% if asset.asset_type == 'scanner' %}selected{% endif %}>Scanner</option>
+                        <option value="router" {% if asset.asset_type == 'router' %}selected{% endif %}>Router</option>
+                        <option value="switch" {% if asset.asset_type == 'switch' %}selected{% endif %}>Switch</option>
+                        <option value="cctv" {% if asset.asset_type == 'cctv' %}selected{% endif %}>CCTV</option>
+                        <option value="pos" {% if asset.asset_type == 'pos' %}selected{% endif %}>POS System</option>
+                        <option value="other" {% if asset.asset_type == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                
+                <!-- Brand -->
+                <div>
+                    <label for="brand" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Brand
+                    </label>
+                    <input type="text" 
+                           name="brand" 
+                           id="brand"
+                           value="{{ asset.brand|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Enter brand name">
+                </div>
+                
+                <!-- Model -->
+                <div>
+                    <label for="model" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Model
+                    </label>
+                    <input type="text" 
+                           name="model" 
+                           id="model"
+                           value="{{ asset.model|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Enter model number">
+                </div>
+                
+                <!-- Serial Number -->
+                <div>
+                    <label for="serial_number" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Serial Number <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="serial_number" 
+                           id="serial_number"
+                           value="{{ asset.serial_number }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                           placeholder="Enter serial number">
+                </div>
+            </div>
+        </div>
+
+        <!-- Location & Status Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-green-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                </svg>
+                Location & Status
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Outlet -->
+                <div>
+                    <label for="outlet" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Outlet <span class="text-red-500">*</span>
+                    </label>
+                    <select name="outlet" 
+                            id="outlet"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        <option value="">Select Outlet</option>
+                        {% for outlet in outlets %}
+                        <option value="{{ outlet.id }}" {% if asset.outlet.id == outlet.id %}selected{% endif %}>{{ outlet.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Allocation -->
+                <div>
+                    <label for="allocation" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Allocation
+                    </label>
+                    <input type="text" 
+                           name="allocation" 
+                           id="allocation"
+                           value="{{ asset.allocation|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., Front Desk, Manager Office">
+                </div>
+                
+                <!-- Status -->
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Status <span class="text-red-500">*</span>
+                    </label>
+                    <select name="status" 
+                            id="status"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        <option value="Active" {% if asset.status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="Inactive" {% if asset.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="Under Maintenance" {% if asset.status == 'Under Maintenance' %}selected{% endif %}>Under Maintenance</option>
+                    </select>
+                </div>
+                
+                <!-- User -->
+                <div>
+                    <label for="user" class="block text-sm font-semibold text-gray-700 mb-2">
+                        User
+                    </label>
+                    <input type="text" 
+                           name="user" 
+                           id="user"
+                           value="{{ asset.user|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Assigned user name">
+                </div>
+                
+                <!-- Hostname -->
+                <div>
+                    <label for="hostname" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Hostname
+                    </label>
+                    <input type="text" 
+                           name="hostname" 
+                           id="hostname"
+                           value="{{ asset.hostname|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                           placeholder="Computer hostname">
+                </div>
+                
+                <!-- Purchase Date -->
+                <div>
+                    <label for="date_purchase" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Purchase Date
+                    </label>
+                    <input type="date" 
+                           name="date_purchase" 
+                           id="date_purchase"
+                           value="{{ asset.date_purchase|date:'Y-m-d' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Information Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-purple-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                </svg>
+                Network Information
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- IP Address -->
+                <div>
+                    <label for="ip_address" class="block text-sm font-semibold text-gray-700 mb-2">
+                        IP Address
+                    </label>
+                    <input type="text" 
+                           name="ip_address" 
+                           id="ip_address"
+                           value="{{ asset.ip_address|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                           placeholder="e.g., 192.168.1.100">
+                </div>
+                
+                <!-- MAC Address -->
+                <div>
+                    <label for="mac_address" class="block text-sm font-semibold text-gray-700 mb-2">
+                        MAC Address
+                    </label>
+                    <input type="text" 
+                           name="mac_address" 
+                           id="mac_address"
+                           value="{{ asset.mac_address|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                           placeholder="e.g., 00:1B:44:11:3A:B7">
+                </div>
+                
+                <!-- Local IP -->
+                <div>
+                    <label for="local_ip" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Local IP
+                    </label>
+                    <input type="text" 
+                           name="local_ip" 
+                           id="local_ip"
+                           value="{{ asset.local_ip|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-mono"
+                           placeholder="Local IP address">
+                </div>
+                
+                <!-- Network -->
+                <div>
+                    <label for="network" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Network
+                    </label>
+                    <input type="text" 
+                           name="network" 
+                           id="network"
+                           value="{{ asset.network|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Network name">
+                </div>
+            </div>
+        </div>
+
+        <!-- Computer Specifications (for CPU type) -->
+        <div class="mb-8" id="computer-specs" {% if asset.asset_type != 'cpu' %}style="display:none;"{% endif %}>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-indigo-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                </svg>
+                Computer Specifications
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="cpu" class="block text-sm font-semibold text-gray-700 mb-2">CPU</label>
+                    <input type="text" name="cpu" id="cpu" value="{{ asset.cpu|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., Intel Core i5-10400">
+                </div>
+                
+                <div>
+                    <label for="gpu" class="block text-sm font-semibold text-gray-700 mb-2">GPU</label>
+                    <input type="text" name="gpu" id="gpu" value="{{ asset.gpu|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., NVIDIA GTX 1650">
+                </div>
+                
+                <div>
+                    <label for="memory" class="block text-sm font-semibold text-gray-700 mb-2">Memory (RAM)</label>
+                    <input type="text" name="memory" id="memory" value="{{ asset.memory|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., 16GB DDR4">
+                </div>
+                
+                <div>
+                    <label for="disk" class="block text-sm font-semibold text-gray-700 mb-2">Storage</label>
+                    <input type="text" name="disk" id="disk" value="{{ asset.disk|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., 512GB SSD">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="operating_system" class="block text-sm font-semibold text-gray-700 mb-2">Operating System</label>
+                    <input type="text" name="operating_system" id="operating_system" value="{{ asset.operating_system|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="e.g., Windows 11 Pro">
+                </div>
+            </div>
+        </div>
+
+        <!-- Remarks -->
+        <div class="mb-8">
+            <label for="remark" class="block text-sm font-semibold text-gray-700 mb-2">
+                Remarks / Notes
+            </label>
+            <textarea name="remark" 
+                      id="remark"
+                      rows="4"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="Additional notes or remarks about this asset">{{ asset.remark|default:'' }}</textarea>
+        </div>
+
+        <!-- P2P QR Code Upload -->
+        <div class="mb-8">
+            <label for="p2p_qr" class="block text-sm font-semibold text-gray-700 mb-2">
+                P2P QR Code Image
+            </label>
+            {% if asset.p2p_qr %}
+            <div class="mb-3">
+                <p class="text-sm text-gray-600 mb-2">Current QR Code:</p>
+                <img src="{{ asset.p2p_qr.url }}" alt="Current QR Code" class="w-32 h-32 border-2 border-gray-300 rounded">
+            </div>
+            {% endif %}
+            <input type="file" 
+                   name="p2p_qr" 
+                   id="p2p_qr"
+                   accept="image/*"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+            <p class="text-xs text-gray-500 mt-1">Upload a new QR code image (optional)</p>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-4 pt-6 border-t">
+            <button type="submit" 
+                    class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Save Changes
+            </button>
+            
+            <a href="{% url 'it_asset_detail' asset.pk %}" 
+               class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg transition flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Show/hide computer specs based on asset type
+document.getElementById('asset_type').addEventListener('change', function() {
+    const computerSpecs = document.getElementById('computer-specs');
+    if (this.value === 'cpu') {
+        computerSpecs.style.display = 'block';
+    } else {
+        computerSpecs.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

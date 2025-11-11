@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Retail Asset - {{ asset.item }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <a href="{% url 'retail_asset_detail' asset.pk %}" class="inline-flex items-center text-white text-sm mb-4 hover:text-green-100 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Asset Detail
+                </a>
+                <h2 class="text-4xl font-bold text-white">Edit Retail Asset</h2>
+                <p class="text-green-100 text-sm mt-2">Update asset information</p>
+            </div>
+            <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="post" class="bg-white rounded-2xl shadow-lg p-8">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-green-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Basic Information
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Asset ID -->
+                <div>
+                    <label for="asset_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Asset ID
+                    </label>
+                    <input type="text" 
+                           name="asset_id" 
+                           id="asset_id"
+                           value="{{ asset.asset_id|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="Enter asset ID">
+                    <p class="text-xs text-gray-500 mt-1">Unique identifier for this asset</p>
+                </div>
+                
+                <!-- Item Name -->
+                <div>
+                    <label for="item" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Item Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="item" 
+                           id="item"
+                           value="{{ asset.item }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="Enter item name">
+                </div>
+                
+                <!-- Brand -->
+                <div>
+                    <label for="brand" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Brand <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="brand" 
+                           id="brand"
+                           value="{{ asset.brand }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="Enter brand name">
+                </div>
+                
+                <!-- Model -->
+                <div>
+                    <label for="model" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Model <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="model" 
+                           id="model"
+                           value="{{ asset.model }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="Enter model number">
+                </div>
+                
+                <!-- Serial Number -->
+                <div>
+                    <label for="sn" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Serial Number <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="sn" 
+                           id="sn"
+                           value="{{ asset.sn }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition font-mono"
+                           placeholder="Enter serial number">
+                </div>
+                
+                <!-- Power Input -->
+                <div>
+                    <label for="power_input" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Power Input <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="power_input" 
+                           id="power_input"
+                           value="{{ asset.power_input }}"
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="e.g., 220V, 12V DC">
+                </div>
+            </div>
+        </div>
+
+        <!-- Location & Status Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-blue-500 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                </svg>
+                Location & Status
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Outlet -->
+                <div>
+                    <label for="outlet" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Outlet <span class="text-red-500">*</span>
+                    </label>
+                    <select name="outlet" 
+                            id="outlet"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                        <option value="">Select Outlet</option>
+                        {% for outlet in outlets %}
+                        <option value="{{ outlet.id }}" {% if asset.outlet.id == outlet.id %}selected{% endif %}>{{ outlet.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Allocation -->
+                <div>
+                    <label for="allocation" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Allocation
+                    </label>
+                    <input type="text" 
+                           name="allocation" 
+                           id="allocation"
+                           value="{{ asset.allocation|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="e.g., Counter 1, Storage Room">
+                </div>
+                
+                <!-- Status -->
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Status <span class="text-red-500">*</span>
+                    </label>
+                    <select name="status" 
+                            id="status"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                        <option value="Active" {% if asset.status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="Inactive" {% if asset.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="Under Maintenance" {% if asset.status == 'Under Maintenance' %}selected{% endif %}>Under Maintenance</option>
+                    </select>
+                </div>
+                
+                <!-- User -->
+                <div>
+                    <label for="user" class="block text-sm font-semibold text-gray-700 mb-2">
+                        User
+                    </label>
+                    <input type="text" 
+                           name="user" 
+                           id="user"
+                           value="{{ asset.user|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                           placeholder="Assigned user name">
+                </div>
+                
+                <!-- Purchase Date -->
+                <div class="md:col-span-2">
+                    <label for="date_purchase" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Purchase Date
+                    </label>
+                    <input type="date" 
+                           name="date_purchase" 
+                           id="date_purchase"
+                           value="{{ asset.date_purchase|date:'Y-m-d' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
+            </div>
+        </div>
+
+        <!-- Remarks -->
+        <div class="mb-8">
+            <label for="remark" class="block text-sm font-semibold text-gray-700 mb-2">
+                Remarks / Notes
+            </label>
+            <textarea name="remark" 
+                      id="remark"
+                      rows="4"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                      placeholder="Additional notes or remarks about this asset">{{ asset.remark|default:'' }}</textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-4 pt-6 border-t">
+            <button type="submit" 
+                    class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Save Changes
+            </button>
+            
+            <a href="{% url 'retail_asset_detail' asset.pk %}" 
+               class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg transition flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

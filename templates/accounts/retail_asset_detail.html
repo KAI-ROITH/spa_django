@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ asset.item }} - Retail Asset Detail{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 max-w-7xl">
+    <!-- Header -->
+    <div class="relative bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-8 mb-8 print:bg-white print:shadow-none print:border-2 print:border-green-600">
+        <div class="flex items-center justify-between">
+            <div>
+                <a href="{% url 'retail_assets' %}" class="inline-flex items-center text-white text-sm mb-4 hover:text-green-100 transition print:hidden">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Retail Assets
+                </a>
+                <h2 class="text-4xl font-bold text-white print:text-green-900">{{ asset.item }}</h2>
+                <p class="text-green-100 text-sm mt-2 print:text-gray-600">Retail Asset Details</p>
+            </div>
+            
+            <!-- Status Badge -->
+            <div>
+                {% if asset.status == 'Active' %}
+                    <span class="px-6 py-3 bg-green-500 text-white rounded-full font-bold text-lg shadow-lg print:bg-green-100 print:text-green-800 print:shadow-none">
+                        ✓ Active
+                    </span>
+                {% elif asset.status == 'Inactive' %}
+                    <span class="px-6 py-3 bg-red-500 text-white rounded-full font-bold text-lg shadow-lg print:bg-red-100 print:text-red-800 print:shadow-none">
+                        ✗ Inactive
+                    </span>
+                {% elif asset.status == 'Under Maintenance' %}
+                    <span class="px-6 py-3 bg-yellow-500 text-white rounded-full font-bold text-lg shadow-lg print:bg-yellow-100 print:text-yellow-800 print:shadow-none">
+                        ⚠ Maintenance
+                    </span>
+                {% else %}
+                    <span class="px-6 py-3 bg-gray-500 text-white rounded-full font-bold text-lg shadow-lg print:bg-gray-100 print:text-gray-800 print:shadow-none">
+                        {{ asset.status }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Header (only visible when printing) -->
+    <div class="hidden print:block mb-8 text-center border-b-2 border-gray-300 pb-4">
+        <h1 class="text-3xl font-bold text-gray-800">Retail Asset Report</h1>
+        <p class="text-gray-600 mt-2">Generated on: {% now "F d, Y" %}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 print:gap-4">
+        <!-- Basic Information -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 print:shadow-none print:border print:border-gray-300" data-section="basic-info">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b-2 border-green-500 pb-2 print:text-lg">
+                <svg class="w-6 h-6 text-green-600 print:w-5 print:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Basic Information
+            </h3>
+            
+            <div class="space-y-3 print:space-y-2">
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="asset-id">
+                    <span class="text-gray-600 font-medium">Asset ID:</span>
+                    <span class="font-bold text-green-600">{{ asset.asset_id|default:"Not Set" }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="item">
+                    <span class="text-gray-600 font-medium">Item Name:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.item }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="brand">
+                    <span class="text-gray-600 font-medium">Brand:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.brand }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="model">
+                    <span class="text-gray-600 font-medium">Model:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.model }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="serial-number">
+                    <span class="text-gray-600 font-medium">Serial Number:</span>
+                    <span class="font-mono text-sm bg-gray-100 px-3 py-1 rounded print:bg-transparent">{{ asset.sn }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="power-input">
+                    <span class="text-gray-600 font-medium">Power Input:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.power_input }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location & Status -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 print:shadow-none print:border print:border-gray-300" data-section="location-status">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b-2 border-blue-500 pb-2 print:text-lg">
+                <svg class="w-6 h-6 text-blue-600 print:w-5 print:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Location & Status
+            </h3>
+            
+            <div class="space-y-3 print:space-y-2">
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="outlet">
+                    <span class="text-gray-600 font-medium">Outlet:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.outlet.name }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="allocation">
+                    <span class="text-gray-600 font-medium">Allocation:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.allocation|default:"Not Assigned" }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="status">
+                    <span class="text-gray-600 font-medium">Status:</span>
+                    {% if asset.status == 'Active' %}
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold print:bg-transparent">Active</span>
+                    {% elif asset.status == 'Inactive' %}
+                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold print:bg-transparent">Inactive</span>
+                    {% else %}
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold print:bg-transparent">{{ asset.status }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="user">
+                    <span class="text-gray-600 font-medium">User:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.user|default:"Not Assigned" }}</span>
+                </div>
+                
+                <div class="flex justify-between py-2 border-b border-gray-100 print:py-1" data-field="purchase-date">
+                    <span class="text-gray-600 font-medium">Purchase Date:</span>
+                    <span class="font-semibold text-gray-800">{{ asset.date_purchase|date:"F d, Y"|default:"N/A" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        {% if asset.remark %}
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-2 print:shadow-none print:border print:border-gray-300" data-section="remarks">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b-2 border-purple-500 pb-2 print:text-lg">
+                <svg class="w-6 h-6 text-purple-600 print:w-5 print:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                </svg>
+                Remarks
+            </h3>
+            
+            <p class="p-4 bg-gray-50 rounded-lg text-gray-700 print:bg-transparent print:border print:border-gray-300 print:p-2">{{ asset.remark }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Service History -->
+        {% if services %}
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-2 print:shadow-none print:border print:border-gray-300" data-section="service-history">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b-2 border-orange-500 pb-2 print:text-lg">
+                <svg class="w-6 h-6 text-orange-600 print:w-5 print:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Service History
+            </h3>
+            
+            <div class="space-y-4 print:space-y-2">
+                {% for service in services %}
+                <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-orange-500 print:bg-transparent print:border print:border-gray-300 print:p-2">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-semibold text-gray-800">{{ service.service_date|date:"F d, Y" }}</span>
+                        <span class="text-sm text-gray-600">By: {{ service.technician }}</span>
+                    </div>
+                    <p class="text-gray-700">{{ service.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Print Footer (only visible when printing) -->
+    <div class="hidden print:block mt-8 pt-4 border-t-2 border-gray-300 text-center text-sm text-gray-600">
+        <p>This report was generated from the Asset Management System</p>
+        <p class="mt-1">© {% now "Y" %} - All Rights Reserved</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4 mt-8 print:hidden">
+        <button onclick="openPrintModal()" 
+                class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            Print Report
+        </button>
+        
+        <a href="{% url 'edit_retail_asset' asset.pk %}" 
+           class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Edit Asset
+        </a>
+        
+        <a href="{% url 'add_service' asset.pk %}" 
+           class="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Service Record
+        </a>
+        
+        <a href="{% url 'retail_assets' %}" 
+           class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg transition flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to List
+        </a>
+    </div>
+</div>
+
+<!-- Print Selection Modal -->
+<div id="printModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closePrintModal(event)">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Select Sections to Print
+            </h3>
+            <p class="text-purple-100 text-sm mt-2">Choose which information to include in your report</p>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-6 overflow-y-auto max-h-[60vh]">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Basic Information -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-800 text-lg mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Main Sections
+                    </h4>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="print-section w-4 h-4 text-purple-600 rounded" data-section="basic-info" checked>
+                        <span class="text-gray-700">Basic Information</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="print-section w-4 h-4 text-purple-600 rounded" data-section="location-status" checked>
+                        <span class="text-gray-700">Location & Status</span>
+                    </label>
+                </div>
+                
+                <!-- Optional Sections -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-gray-800 text-lg mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Optional Sections
+                    </h4>
+                    {% if asset.remark %}
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="print-section w-4 h-4 text-purple-600 rounded" data-section="remarks" checked>
+                        <span class="text-gray-700">Remarks</span>
+                    </label>
+                    {% endif %}
+                    {% if services %}
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="print-section w-4 h-4 text-purple-600 rounded" data-section="service-history" checked>
+                        <span class="text-gray-700">Service History</span>
+                    </label>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="bg-gray-50 p-6 flex gap-3">
+            <button onclick="selectAllSections()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition">
+                Select All
+            </button>
+            <button onclick="deselectAllSections()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition">
+                Deselect All
+            </button>
+            <div class="flex-1"></div>
+            <button onclick="closePrintModal()" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-bold transition">
+                Cancel
+            </button>
+            <button onclick="printSelected()" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                Print Selected
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    body {
+        background: white;
+    }
+    
+    .print\:hidden {
+        display: none !important;
+    }
+    
+    .print\:block {
+        display: block !important;
+    }
+    
+    .print\:bg-white {
+        background-color: white !important;
+    }
+    
+    .print\:text-green-900 {
+        color: #14532d !important;
+    }
+    
+    .print\:text-gray-600 {
+        color: #4b5563 !important;
+    }
+    
+    .print\:shadow-none {
+        box-shadow: none !important;
+    }
+    
+    .print\:border {
+        border-width: 1px !important;
+    }
+    
+    .print\:border-2 {
+        border-width: 2px !important;
+    }
+    
+    .print\:border-green-600 {
+        border-color: #16a34a !important;
+    }
+    
+    .print\:border-gray-300 {
+        border-color: #d1d5db !important;
+    }
+    
+    .print\:bg-transparent {
+        background-color: transparent !important;
+    }
+    
+    .print\:bg-green-100 {
+        background-color: #dcfce7 !important;
+    }
+    
+    .print\:text-green-800 {
+        color: #166534 !important;
+    }
+    
+    .print\:bg-red-100 {
+        background-color: #fee2e2 !important;
+    }
+    
+    .print\:text-red-800 {
+        color: #991b1b !important;
+    }
+    
+    .print\:bg-yellow-100 {
+        background-color: #fef3c7 !important;
+    }
+    
+    .print\:text-yellow-800 {
+        color: #854d0e !important;
+    }
+    
+    .print\:bg-gray-100 {
+        background-color: #f3f4f6 !important;
+    }
+    
+    .print\:text-gray-800 {
+        color: #1f2937 !important;
+    }
+    
+    .print\:text-lg {
+        font-size: 1.125rem !important;
+    }
+    
+    .print\:w-5 {
+        width: 1.25rem !important;
+    }
+    
+    .print\:h-5 {
+        height: 1.25rem !important;
+    }
+    
+    .print\:space-y-2 > * + * {
+        margin-top: 0.5rem !important;
+    }
+    
+    .print\:py-1 {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+    
+    .print\:gap-4 {
+        gap: 1rem !important;
+    }
+    
+    .print\:gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    .print\:p-2 {
+        padding: 0.5rem !important;
+    }
+    
+    /* Hide sections not selected for printing */
+    .hide-section-for-print {
+        display: none !important;
+    }
+    
+    /* Page break control */
+    .page-break-inside-avoid {
+        page-break-inside: avoid;
+    }
+    
+    /* Ensure proper sizing */
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+}
+</style>
+
+<script>
+function openPrintModal() {
+    document.getElementById('printModal').classList.remove('hidden');
+    document.getElementById('printModal').classList.add('flex');
+}
+
+function closePrintModal(event) {
+    if (!event || event.target === event.currentTarget) {
+        document.getElementById('printModal').classList.add('hidden');
+        document.getElementById('printModal').classList.remove('flex');
+    }
+}
+
+function selectAllSections() {
+    document.querySelectorAll('.print-section').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselectAllSections() {
+    document.querySelectorAll('.print-section').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function printSelected() {
+    // Get all selected sections
+    const selectedSections = [];
+    document.querySelectorAll('.print-section:checked').forEach(checkbox => {
+        selectedSections.push(checkbox.dataset.section);
+    });
+    
+    // Hide unchecked sections
+    document.querySelectorAll('[data-section]').forEach(element => {
+        const sectionName = element.dataset.section;
+        if (!selectedSections.includes(sectionName)) {
+            element.classList.add('hide-section-for-print');
+        } else {
+            element.classList.remove('hide-section-for-print');
+        }
+    });
+    
+    // Close modal
+    closePrintModal();
+    
+    // Print
+    setTimeout(() => {
+        window.print();
+        
+        // Restore all sections after printing
+        setTimeout(() => {
+            document.querySelectorAll('[data-section]').forEach(element => {
+                element.classList.remove('hide-section-for-print');
+            });
+        }, 100);
+    }, 100);
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePrintModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,482 @@
+{% extends 'base.html' %}
+
+{% block title %}Add IT Asset{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+    <!-- Header -->
+    <div class="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl shadow-2xl p-8 mb-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+        
+        <div class="relative">
+            <a href="{% url 'it_assets' %}" class="inline-flex items-center text-white text-sm mb-4 hover:text-blue-100 transition">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to IT Assets
+            </a>
+            <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add New IT Asset
+            </h2>
+            <p class="text-blue-100 text-sm mt-2">Fill in the details to add new IT equipment</p>
+        </div>
+    </div>
+
+    <!-- Active Toggle Section -->
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-purple-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Active Status</h3>
+                    <p class="text-sm text-gray-600">Check to show in list, uncheck to save as draft</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <span class="text-sm font-semibold text-gray-700">Active:</span>
+                    <div class="relative">
+                        <input type="checkbox" id="activeToggle" name="active" class="sr-only peer" checked>
+                        <div class="w-16 h-8 bg-gray-300 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-indigo-500 transition-all duration-300"></div>
+                        <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-8 shadow-md"></div>
+                    </div>
+                    <span class="text-lg font-bold text-blue-600" id="activeLabel">YES</span>
+                </label>
+            </div>
+        </div>
+        <div class="mt-4 p-3 bg-blue-100 rounded-lg" id="activeInfo">
+            <p class="text-sm text-blue-800 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Asset will be <strong>visible in list and dashboard</strong> immediately
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100" id="it-asset-form">
+        {% csrf_token %}
+        
+        <!-- Display Form Errors -->
+        {% if form.errors %}
+        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6">
+            <div class="flex items-center gap-2 text-red-800 font-bold mb-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Please correct the errors below:
+            </div>
+            <ul class="text-sm text-red-700 list-disc list-inside">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Asset Type - Make this FIRST and PROMINENT -->
+            <div class="md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
+                <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    Asset Type
+                    <span class="text-red-500">*</span>
+                    <span class="text-xs text-gray-500 font-normal ml-2">(Select first - determines Asset ID prefix)</span>
+                </label>
+                {{ form.asset_type }}
+                <p class="text-xs text-gray-500 mt-1">
+                    📌 CPU → CPU01, CCTV → CCTV01, Network → NET01
+                </p>
+            </div>
+
+            <!-- Asset ID Field with Auto-Generate Button -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                    </svg>
+                    Asset ID
+                    <span class="text-xs text-gray-500 font-normal ml-2">(Auto-generated from asset type)</span>
+                </label>
+                <div class="flex gap-2">
+                    {{ form.asset_id }}
+                    <button type="button" id="generate-asset-id" 
+                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition whitespace-nowrap font-bold shadow-lg hover:shadow-xl flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Auto Generate
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    📌 Examples: CPU01, CPU02, CCTV01, NET01 - Will auto-increment based on asset type
+                </p>
+            </div>
+
+           <!-- User Field -->
+<div>
+    <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        User
+    </label>
+    <input type="text" name="user" id="id_user" 
+           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition"
+           placeholder="Enter user name">
+    <p class="text-xs text-gray-500 mt-1">📌 Enter the name of the person using this asset</p>
+</div>
+            <!-- P2P QR File Upload -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                    </svg>
+                    P2P QR Code
+                    {% if form.p2p_qr.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                <div class="relative">
+                    <input type="file" name="p2p_qr" id="id_p2p_qr" accept=".png,image/png" class="file-input">
+                    <div class="file-input-display">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <span class="file-name">Click to upload PNG file</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    📌 Upload P2P QR code image (PNG format only)
+                </p>
+                {% if form.p2p_qr.errors %}
+                    <p class="text-xs text-red-600 mt-1">{{ form.p2p_qr.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Render each form field with styling -->
+            {% for field in form %}
+                {% if field.name == 'active' or field.name == 'asset_id' or field.name == 'asset_type' or field.name == 'user' or field.name == 'p2p_qr' %}
+                    <!-- Skip - already rendered separately -->
+                {% elif field.name == 'remark' %}
+                    <!-- Full width for text areas -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                            </svg>
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- Regular fields -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                            {% if field.name == 'outlet' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            {% elif field.name == 'item' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                                </svg>
+                            {% elif field.name == 'brand' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                            {% elif field.name == 'hostname' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                                </svg>
+                            {% elif field.name == 'ip_address' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                </svg>
+                            {% elif field.name == 'date_purchase' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            {% elif field.name == 'status' %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            {% else %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            {% endif %}
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <p class="text-xs text-red-600 mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4 mt-8 pt-6 border-t-2 border-gray-100">
+            <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Save IT Asset
+            </button>
+            <a href="{% url 'it_assets' %}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg transition flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cancel
+            </a>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'dashboard' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Style all form inputs, selects, and textareas */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    background-color: #f9fafb;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Style checkboxes */
+input[type="checkbox"]:not(.sr-only) {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.375rem;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:not(.sr-only):checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* File input styling */
+.file-input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.file-input-display {
+    width: 100%;
+    padding: 1.5rem 1rem;
+    border: 2px dashed #e5e7eb;
+    border-radius: 0.75rem;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-input:hover + .file-input-display,
+.file-input:focus + .file-input-display {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.file-name {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+</style>
+
+<script>
+// Toggle active/inactive
+const activeToggle = document.getElementById('activeToggle');
+const activeLabel = document.getElementById('activeLabel');
+const activeInfo = document.getElementById('activeInfo');
+
+activeToggle.addEventListener('change', function() {
+    if (this.checked) {
+        activeLabel.textContent = 'YES';
+        activeLabel.className = 'text-lg font-bold text-blue-600';
+        activeInfo.innerHTML = `
+            <p class="text-sm text-blue-800 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Asset will be <strong>visible in list and dashboard</strong> immediately
+            </p>
+        `;
+        activeInfo.className = 'mt-4 p-3 bg-blue-100 rounded-lg';
+    } else {
+        activeLabel.textContent = 'NO';
+        activeLabel.className = 'text-lg font-bold text-gray-600';
+        activeInfo.innerHTML = `
+            <p class="text-sm text-gray-700 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                </svg>
+                Asset will be saved as <strong>Draft</strong> (hidden from list/dashboard)
+            </p>
+        `;
+        activeInfo.className = 'mt-4 p-3 bg-gray-100 rounded-lg';
+    }
+});
+
+// File input display name
+const fileInput = document.getElementById('id_p2p_qr');
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Click to upload PNG file';
+        const fileNameDisplay = this.nextElementSibling.querySelector('.file-name');
+        if (fileNameDisplay) {
+            fileNameDisplay.textContent = fileName;
+            if (e.target.files[0]) {
+                fileNameDisplay.style.color = '#3b82f6';
+                fileNameDisplay.style.fontWeight = '600';
+            }
+        }
+    });
+}
+
+// Auto-Generate Asset ID functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const generateBtn = document.getElementById('generate-asset-id');
+    const assetIdField = document.getElementById('asset_id_field');
+    const assetTypeField = document.getElementById('asset_type_field');
+    
+    generateBtn.addEventListener('click', async function() {
+        const assetType = assetTypeField.value;
+        
+        if (!assetType) {
+            alert('⚠️ Please select an Asset Type first!\n\nThe Asset ID will be generated based on the asset type (e.g., CPU → CPU01)');
+            assetTypeField.focus();
+            return;
+        }
+        
+        try {
+            // Disable button and show loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = `
+                <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Generating...
+            `;
+            
+            const response = await fetch(`/api/it-asset-id/?asset_type=${encodeURIComponent(assetType)}`);
+            const data = await response.json();
+            
+            if (data.asset_id) {
+                assetIdField.value = data.asset_id;
+                assetIdField.focus();
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50';
+                successMsg.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Generated Asset ID: ${data.asset_id}
+                `;
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 3000);
+            } else {
+                alert('❌ Error generating Asset ID. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Network error. Please check your connection and try again.');
+        } finally {
+            // Reset button
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Auto Generate
+            `;
+        }
+    });
+    
+    // Optional: Auto-generate when asset type changes
+    assetTypeField.addEventListener('change', function() {
+        if (!assetIdField.value) {
+            // Show a hint that they can auto-generate
+            const hint = document.createElement('div');
+            hint.className = 'text-xs text-blue-600 mt-1 flex items-center gap-1';
+            hint.innerHTML = `
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Click "Auto Generate" to create an Asset ID
+            `;
+            const container = assetIdField.parentElement;
+            if (!container.querySelector('.text-blue-600')) {
+                container.appendChild(hint);
+                setTimeout(() => hint.remove(), 5000);
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
