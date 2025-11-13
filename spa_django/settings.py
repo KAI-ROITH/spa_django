@@ -65,13 +65,17 @@ TEMPLATES = [
 WSGI_APPLICATION = "spa_django.wsgi.application"
 
 # ─── Database ─────────────────────────────────────────────
+# Use Koyeb PostgreSQL via DATABASE_URL from .env
 DATABASE_URL = env("DATABASE_URL", default=None)
 
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+        "default": dj_database_url.config(
+            default=DATABASE_URL, conn_max_age=600, ssl_require=True
+        )
     }
 else:
+    # fallback local settings (optional)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
