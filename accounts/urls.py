@@ -1,9 +1,13 @@
-# accounts/urls.py
-
 from django.urls import path
 from . import views
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    # ============================================
+    # Default redirect from /accounts/ to /accounts/dashboard/
+    # ============================================
+    path('', RedirectView.as_view(url='dashboard/', permanent=True)),
+
     # ============================================
     # Authentication URLs
     # ============================================
